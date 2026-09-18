@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Só cobre o que roda em Node puro: type-check, lint e a suíte de testes
+# (que já usa bancos reais embarcados — PGlite para Postgres, better-sqlite3
+# para SQLite — sem precisar de nenhum segredo nem serviço externo).
+#
+# Fora do escopo deste workflow, de propósito:
+#  - build do app desktop (Tauri/Rust) — precisa de um toolchain nativo
+#    pesado (Rust + Visual Studio Build Tools no Windows), workflow separado
+#    quando fizer falta;
+#  - build/publicação do app mobile (EAS) — precisa de credenciais da Expo;
+#  - testes em dispositivo físico — não automatizáveis por definição.
+jobs:
+  test:
+    name: Type-check, lint e testes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Type-check — raiz (packages/core, packages/db)
+        run: npx tsc --noEmit
+
+      - name: Type-check — apps/mobile
+        working-directory: apps/mobile
+        run: npx tsc --noEmit
+
+      - name: Lint — apps/mobile
+        working-directory: apps/mobile
+        run: npx expo lint
+
+      - name: Testes (todo o monorepo)
+        run: npm test

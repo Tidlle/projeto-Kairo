@@ -6,6 +6,8 @@ Gestão diária: finanças pessoais + rotina (tarefas, hábitos, metas, agenda) 
 
 ## Estado atual
 
+Repositório: [github.com/Tidlle/projeto-Kairo](https://github.com/Tidlle/projeto-Kairo).
+
 **145 testes passando** (`npm test` na raiz), type-check limpo em todo o monorepo.
 
 | Área | Estado |
@@ -18,8 +20,8 @@ Gestão diária: finanças pessoais + rotina (tarefas, hábitos, metas, agenda) 
 | Sincronização SQLite local ↔ Supabase | ✅ |
 | App desktop (Tauri) com banco local funcional | ✅ (banco verificado; UI não confirmada visualmente ainda) |
 | Testes em dispositivo físico (iOS/Android) | ✅ Android e iPhone testados |
+| CI (lint, types, testes automatizados) | ✅ GitHub Actions, roda a cada push/PR para `main` |
 | Dashboard financeiro (entradas/saídas, categorias, heatmap) | ⏳ pendente |
-| CI (lint, types, testes automatizados) | ⏳ pendente — precisa de um repositório git com remoto primeiro |
 
 ## Arquitetura
 
@@ -93,7 +95,10 @@ npm run inspect         # raio-x do banco local (contagens, últimas transaçõe
 npm test                                    # todos os testes do monorepo
 npx tsc --noEmit                            # type-check na raiz (packages/core, packages/db)
 (cd apps/mobile && npx tsc --noEmit)        # type-check do app mobile (config própria)
+(cd apps/mobile && npx expo lint)           # lint (ESLint, config gerada pela Expo)
 ```
+
+Esses quatro comandos são exatamente os que o CI roda a cada push — ver [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Configuração / variáveis de ambiente
 
@@ -143,7 +148,7 @@ O Expo Go não suporta mais `expo-notifications` completamente desde o SDK 53 �
 - **UI do app desktop ainda não confirmada visualmente** — o banco local do Tauri foi validado inspecionando o arquivo `.db` gerado diretamente, mas não houve confirmação visual de que a interface renderiza os dados corretamente.
 - **Notificações locais não testadas fisicamente** — o Expo Go não suporta `expo-notifications` completamente (SDK 53+); só o cálculo de horário (puro) e o wrapper são testados, não o disparo real da notificação num aparelho.
 - **`events` (agenda) sincroniza, mas sem recorrência** — campos como `recurrenceRule`/`origin`/`externalId` já existem no schema do Postgres (pensados para uma futura integração com Google Calendar) mas não são usados ainda.
-- **Sem CI configurado** — testes e type-check rodam só localmente, sob demanda. Requer transformar o projeto num repositório git com remoto antes de poder configurar (GitHub Actions ou equivalente).
+- **CI cobre só o que roda em Node puro** — type-check, lint e testes. Build do app desktop (precisa de Rust/toolchain nativo), publicação do mobile via EAS (precisa de credenciais) e testes em dispositivo físico ficam de fora, por ora.
 
 ## Documentação adicional
 
