@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.local
+out/
+dist/
+*.log
+data/
+
+# Expo / React Native
+.expo/
+web-build/
+expo-env.d.ts
+
+# cache do Supabase CLI — pooler-url tem a senha do banco em texto puro
+supabase/.temp/

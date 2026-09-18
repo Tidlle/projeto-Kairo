@@ -1,0 +1,36 @@
+{
+  "name": "kairo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kairo — gestão diária: finanças + rotina",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "smoke": "tsx scripts/pluggy-smoke-test.ts",
+    "ingest:dry": "tsx scripts/ingest-dry-run.ts",
+    "test": "tsx --test packages/core/test/*.test.ts packages/db/test/*.test.ts apps/mobile/test/*.test.ts",
+    "db:generate": "drizzle-kit generate",
+    "sync": "tsx scripts/sync.ts",
+    "db:migrate": "tsx scripts/db-migrate.ts",
+    "inspect": "tsx scripts/inspect.ts"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.10.0",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9"
+  }
+}

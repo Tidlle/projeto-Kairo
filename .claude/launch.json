@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kairo-mobile-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "web", "-w", "@kairo/mobile", "--", "--port", "8081"],
+      "port": 8081
+    }
+  ]
+}

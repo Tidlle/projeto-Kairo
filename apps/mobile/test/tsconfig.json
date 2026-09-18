@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "module": "ESNext",
+    "moduleResolution": "bundler"
+  },
+  "exclude": [],
+  "include": ["**/*.ts", "../src/db/**/*.ts"]
+}
