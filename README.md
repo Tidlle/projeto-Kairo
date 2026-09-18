@@ -1,5 +1,7 @@
 # Kairo
 
+[![CI](https://github.com/Tidlle/projeto-Kairo/actions/workflows/ci.yml/badge.svg)](https://github.com/Tidlle/projeto-Kairo/actions/workflows/ci.yml)
+
 Gestão diária: finanças pessoais + rotina (tarefas, hábitos, metas, agenda) num só app, com uma base de código para mobile, web e desktop.
 
 > Este README é a referência prática — o que existe e como rodar. Para o histórico de decisões, bugs reais encontrados e o porquê de cada escolha de arquitetura, ver [`PLANO.md`](PLANO.md).
