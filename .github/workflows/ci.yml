@@ -31,6 +31,18 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      # apps/mobile/expo-env.d.ts é gerado pelo próprio Expo CLI na primeira
+      # vez que você roda `expo start`/`expo prebuild` localmente — por isso
+      # está no .gitignore (o próprio arquivo diz "should be in your git
+      # ignore"). Um checkout limpo do CI nunca roda esses comandos antes do
+      # type-check, então o arquivo não existe — e sem ele, `tsc` falha com
+      # "Cannot find module" para os `.css`/`.module.css` que `expo/types`
+      # declara. Conteúdo estático, documentado pelo próprio Expo — recriado
+      # aqui em vez de depender de algum comando disparar a geração automática.
+      - name: Gerar apps/mobile/expo-env.d.ts
+        run: |
+          printf '/// <reference types="expo/types" />\n\n// NOTE: This file should not be edited and should be in your git ignore\n' > apps/mobile/expo-env.d.ts
+
       - name: Type-check — raiz (packages/core, packages/db)
         run: npx tsc --noEmit
 
