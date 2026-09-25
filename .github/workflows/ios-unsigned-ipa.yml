@@ -32,7 +32,7 @@ jobs:
       - name: Compilar sem assinatura
         working-directory: apps/mobile/ios
         run: |
-          WORKSPACE=$(ls *.xcworkspace)
+          WORKSPACE=$(ls -d *.xcworkspace)
           SCHEME=$(basename "$(ls -d *.xcodeproj)" .xcodeproj)
           echo "Workspace: $WORKSPACE / Scheme: $SCHEME"
           xcodebuild archive \
