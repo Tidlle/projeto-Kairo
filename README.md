@@ -22,6 +22,7 @@ Repositório: [github.com/Tidlle/projeto-Kairo](https://github.com/Tidlle/projet
 | Sincronização SQLite local ↔ Supabase | ✅ |
 | App desktop (Tauri) com banco local funcional | ✅ (banco verificado; UI não confirmada visualmente ainda) |
 | Testes em dispositivo físico (iOS/Android) | ✅ Android e iPhone testados |
+| Identidade visual (ícone, tema escuro fixo, tipografia Fraunces/Inter) | ✅ — ver [Identidade visual](#identidade-visual) |
 | CI (lint, types, testes automatizados) | ✅ GitHub Actions, roda a cada push/PR para `main` |
 | Dashboard financeiro (entradas/saídas, categorias, heatmap) | ⏳ pendente |
 
@@ -143,6 +144,12 @@ Já testado com sucesso em Android e iPhone reais, via Expo Go. Para reproduzir:
 3. Escaneie o QR code exibido no terminal com a câmera (iOS) ou o app Expo Go (Android) — o celular precisa estar na mesma rede Wi-Fi do computador.
 
 O Expo Go não suporta mais `expo-notifications` completamente desde o SDK 53 — um aviso aparece na inicialização. Para validar notificações locais de verdade é preciso um development build (`eas build` ou `expo prebuild`), não coberto ainda.
+
+## Identidade visual
+
+- **Tema**: sempre escuro, não segue a preferência do sistema (`apps/mobile/src/hooks/use-color-scheme.ts` retorna `'dark'` de forma fixa). Cores em `apps/mobile/src/constants/theme.ts` (`Colors.dark`/`Colors.light` — o claro existe no código mas não é usado hoje).
+- **Tipografia**: Fraunces (display — títulos e o logotipo "kairo", em itálico em alguns cabeçalhos de tela) + Inter (corpo de texto e números, incluindo o estilo `money` com dígitos tabulares).
+- **Ícone do app**: a letra grega kappa (κ), primeira letra de "Καιρός" — origem do nome do app. Fontes em `apps/mobile/assets/images/` (`icon.png`, `android-icon-*.png`, `favicon.png`, `splash-icon.png`); a mesma marca aparece animada na abertura do app via `kappa-glyph.png` (`apps/mobile/src/components/animated-icon.tsx`).
 
 ## Limitações conhecidas
 
