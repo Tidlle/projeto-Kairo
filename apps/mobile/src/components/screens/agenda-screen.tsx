@@ -214,8 +214,8 @@ export default function AgendaScreen() {
                   <View style={styles.taskChipRow}>
                     <Pressable
                       onPress={() => setForm((f) => ({ ...f, taskId: null }))}
-                      style={[styles.chip, !form.taskId && styles.chipSelected]}>
-                      <ThemedText type="small" themeColor={!form.taskId ? 'background' : 'text'}>
+                      style={[styles.chip, !form.taskId && { backgroundColor: theme.accent, borderColor: theme.accent }]}>
+                      <ThemedText type="small" themeColor={!form.taskId ? 'onAccent' : 'text'}>
                         nenhuma
                       </ThemedText>
                     </Pressable>
@@ -223,8 +223,8 @@ export default function AgendaScreen() {
                       <Pressable
                         key={t.id}
                         onPress={() => setForm((f) => ({ ...f, taskId: t.id }))}
-                        style={[styles.chip, form.taskId === t.id && styles.chipSelected]}>
-                        <ThemedText type="small" themeColor={form.taskId === t.id ? 'background' : 'text'}>
+                        style={[styles.chip, form.taskId === t.id && { backgroundColor: theme.accent, borderColor: theme.accent }]}>
+                        <ThemedText type="small" themeColor={form.taskId === t.id ? 'onAccent' : 'text'}>
                           {t.title}
                         </ThemedText>
                       </Pressable>
@@ -245,8 +245,8 @@ export default function AgendaScreen() {
               <Pressable
                 onPress={handleSave}
                 disabled={!form.title.trim()}
-                style={[styles.addButton, !form.title.trim() && styles.addButtonDisabled]}>
-                <ThemedText type="smallBold" themeColor="background">
+                style={[styles.addButton, { backgroundColor: theme.accent }, !form.title.trim() && styles.addButtonDisabled]}>
+                <ThemedText type="smallBold" themeColor="onAccent">
                   {form.editingId ? 'Salvar' : 'Adicionar'}
                 </ThemedText>
               </Pressable>
@@ -334,9 +334,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#868e96',
   },
-  chipSelected: { backgroundColor: '#3c87f7', borderColor: '#3c87f7' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, alignItems: 'center', justifyContent: 'flex-end' },
-  addButton: { backgroundColor: '#3c87f7', paddingVertical: Spacing.one, paddingHorizontal: Spacing.three, borderRadius: Spacing.three },
+  addButton: { paddingVertical: Spacing.one, paddingHorizontal: Spacing.three, borderRadius: Spacing.three },
   addButtonDisabled: { opacity: 0.4 },
   list: { flex: 1 },
   empty: { paddingVertical: Spacing.four, textAlign: 'center' },

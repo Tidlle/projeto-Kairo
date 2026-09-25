@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM"],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -9,7 +12,14 @@
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["packages/**/*.ts", "scripts/**/*.ts", "drizzle.config.ts"]
+  "include": [
+    "packages/**/*.ts",
+    "scripts/**/*.ts",
+    "drizzle.config.ts"
+  ],
+  "extends": "expo/tsconfig.base"
 }

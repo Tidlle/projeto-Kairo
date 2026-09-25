@@ -1,11 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedView } from '@/components/themed-view';
+import { useTheme } from '@/hooks/use-theme';
 import { Spacing } from '@/constants/theme';
-
-// Cor de destaque do produto — enquanto packages/ui não existe, mora aqui.
-// Quando o design system nascer, isso vira um token compartilhado.
-const ACCENT = '#3c87f7';
 
 type ProgressBarProps = {
   /** 0–100. Valores fora da faixa são grampeados, nunca estouram a barra. */
@@ -13,11 +10,12 @@ type ProgressBarProps = {
 };
 
 export function ProgressBar({ percent }: ProgressBarProps) {
+  const theme = useTheme();
   const clamped = Math.max(0, Math.min(100, percent));
 
   return (
     <ThemedView type="backgroundSelected" style={styles.track}>
-      <View style={[styles.fill, { width: `${clamped}%` }]} />
+      <View style={[styles.fill, { width: `${clamped}%`, backgroundColor: theme.accent }]} />
     </ThemedView>
   );
 }
@@ -31,6 +29,5 @@ const styles = StyleSheet.create({
   fill: {
     height: '100%',
     borderRadius: Spacing.one,
-    backgroundColor: ACCENT,
   },
 });

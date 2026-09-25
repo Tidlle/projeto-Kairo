@@ -14,9 +14,10 @@ import { useAllTasks } from '@/db/hooks';
 import { createTask, cycleTaskStatus, deleteTask } from '@/db/queries';
 import { cancelTaskReminder, syncTaskReminder } from '@/notifications';
 
+// "média" usa o azul antigo da marca — o laranja colidia com o novo acento âmbar.
 const PRIORITY_COLOR: Record<Priority, string> = {
   high: '#e03131',
-  medium: '#f08c00',
+  medium: '#3c87f7',
   low: '#2f9e44',
   none: '#868e96',
 };
@@ -134,7 +135,7 @@ export default function TasksScreen() {
                     { borderColor: PRIORITY_COLOR[p] },
                     priority === p && { backgroundColor: PRIORITY_COLOR[p] },
                   ]}>
-                  <ThemedText type="small" themeColor={priority === p ? 'background' : 'text'}>
+                  <ThemedText type="small" themeColor={priority === p ? 'onAccent' : 'text'}>
                     {PRIORITY_LABEL[p]}
                   </ThemedText>
                 </Pressable>
@@ -142,8 +143,8 @@ export default function TasksScreen() {
               <Pressable
                 onPress={handleAdd}
                 disabled={!title.trim()}
-                style={[styles.addButton, !title.trim() && styles.addButtonDisabled]}>
-                <ThemedText type="smallBold" themeColor="background">
+                style={[styles.addButton, { backgroundColor: theme.accent }, !title.trim() && styles.addButtonDisabled]}>
+                <ThemedText type="smallBold" themeColor="onAccent">
                   Adicionar
                 </ThemedText>
               </Pressable>
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
   dueRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, alignItems: 'center' },
   chip: { paddingVertical: Spacing.half, paddingHorizontal: Spacing.two, borderRadius: Spacing.three, borderWidth: 1 },
-  addButton: { marginLeft: 'auto', backgroundColor: '#3c87f7', paddingVertical: Spacing.one, paddingHorizontal: Spacing.three, borderRadius: Spacing.three },
+  addButton: { marginLeft: 'auto', paddingVertical: Spacing.one, paddingHorizontal: Spacing.three, borderRadius: Spacing.three },
   addButtonDisabled: { opacity: 0.4 },
   list: { flex: 1 },
   empty: { paddingVertical: Spacing.four, textAlign: 'center' },

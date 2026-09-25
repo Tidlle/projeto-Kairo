@@ -15,9 +15,12 @@ import { toggleHabitToday } from '@/db/queries';
 import { getSyncConfig } from '@/db/sync-config';
 import { syncRoutine } from '@/db/sync';
 
+// "média" usa o azul antigo da marca, de propósito: o laranja colidia
+// visualmente com o novo acento âmbar (a mesma cor não pode significar
+// "prioridade média" E "isso é clicável/é a marca" ao mesmo tempo).
 const PRIORITY_COLOR: Record<Priority, string> = {
   high: '#e03131',
-  medium: '#f08c00',
+  medium: '#3c87f7',
   low: '#2f9e44',
   none: '#868e96',
 };
@@ -124,7 +127,7 @@ export default function HojeScreen() {
             )}
 
             <SectionCard title="Saldo">
-              <ThemedText type="subtitle">{formatBRL(brief.balanceCents)}</ThemedText>
+              <ThemedText type="money">{formatBRL(brief.balanceCents)}</ThemedText>
             </SectionCard>
 
             {brief.dueToday.length > 0 && (

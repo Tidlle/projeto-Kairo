@@ -76,8 +76,8 @@ export default function HabitsScreen() {
                 <Pressable
                   key={f}
                   onPress={() => setFrequency(f)}
-                  style={[styles.chip, frequency === f && styles.chipSelected]}>
-                  <ThemedText type="small" themeColor={frequency === f ? 'background' : 'text'}>
+                  style={[styles.chip, frequency === f && { backgroundColor: theme.accent, borderColor: theme.accent }]}>
+                  <ThemedText type="small" themeColor={frequency === f ? 'onAccent' : 'text'}>
                     {FREQUENCY_LABEL[f]}
                   </ThemedText>
                 </Pressable>
@@ -85,8 +85,8 @@ export default function HabitsScreen() {
               <Pressable
                 onPress={handleAdd}
                 disabled={!name.trim()}
-                style={[styles.addButton, !name.trim() && styles.addButtonDisabled]}>
-                <ThemedText type="smallBold" themeColor="background">
+                style={[styles.addButton, { backgroundColor: theme.accent }, !name.trim() && styles.addButtonDisabled]}>
+                <ThemedText type="smallBold" themeColor="onAccent">
                   Adicionar
                 </ThemedText>
               </Pressable>
@@ -137,8 +137,7 @@ const styles = StyleSheet.create({
   input: { fontSize: 16, paddingVertical: Spacing.two },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, alignItems: 'center' },
   chip: { paddingVertical: Spacing.half, paddingHorizontal: Spacing.two, borderRadius: Spacing.three, borderWidth: 1, borderColor: '#868e96' },
-  chipSelected: { backgroundColor: '#3c87f7', borderColor: '#3c87f7' },
-  addButton: { marginLeft: 'auto', backgroundColor: '#3c87f7', paddingVertical: Spacing.one, paddingHorizontal: Spacing.three, borderRadius: Spacing.three },
+  addButton: { marginLeft: 'auto', paddingVertical: Spacing.one, paddingHorizontal: Spacing.three, borderRadius: Spacing.three },
   addButtonDisabled: { opacity: 0.4 },
   list: { flex: 1 },
   empty: { paddingVertical: Spacing.four, textAlign: 'center' },

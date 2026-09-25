@@ -104,8 +104,8 @@ export default function GoalsScreen() {
             <Pressable
               onPress={handleAdd}
               disabled={!name.trim() || !parseBRLToCents(target)}
-              style={[styles.addButton, (!name.trim() || !parseBRLToCents(target)) && styles.addButtonDisabled]}>
-              <ThemedText type="smallBold" themeColor="background">
+              style={[styles.addButton, { backgroundColor: theme.accent }, (!name.trim() || !parseBRLToCents(target)) && styles.addButtonDisabled]}>
+              <ThemedText type="smallBold" themeColor="onAccent">
                 Adicionar
               </ThemedText>
             </Pressable>
@@ -182,7 +182,7 @@ function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: () => void }) {
             onSubmitEditing={handleContribute}
           />
           <Pressable onPress={handleContribute} disabled={!parseBRLToCents(amount)} style={styles.contributeButton}>
-            <ThemedText type="small" themeColor="background">
+            <ThemedText type="small" themeColor="onAccent">
               aportar
             </ThemedText>
           </Pressable>
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   input: { fontSize: 16, paddingVertical: Spacing.two },
   inputHalf: { flex: 1 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: Spacing.two },
-  addButton: { alignSelf: 'flex-start', backgroundColor: '#3c87f7', paddingVertical: Spacing.one, paddingHorizontal: Spacing.three, borderRadius: Spacing.three },
+  addButton: { alignSelf: 'flex-start', paddingVertical: Spacing.one, paddingHorizontal: Spacing.three, borderRadius: Spacing.three },
   addButtonDisabled: { opacity: 0.4 },
   list: { flex: 1 },
   empty: { paddingVertical: Spacing.four, textAlign: 'center' },
