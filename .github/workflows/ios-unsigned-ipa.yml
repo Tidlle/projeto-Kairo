@@ -33,17 +33,21 @@ jobs:
         working-directory: apps/mobile/ios
         run: |
           WORKSPACE=$(ls *.xcworkspace)
-          SCHEME=$(xcodebuild -list -json -workspace "$WORKSPACE" | jq -r '.workspace.schemes[0]')
+          SCHEME=$(basename "$(ls -d *.xcodeproj)" .xcodeproj)
           echo "Workspace: $WORKSPACE / Scheme: $SCHEME"
           xcodebuild archive \
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -archivePath build/App.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            DEVELOPMENT_TEAM=""
 
       - name: Empacotar o .ipa
         working-directory: apps/mobile/ios
