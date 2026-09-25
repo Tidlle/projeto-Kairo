@@ -20,7 +20,7 @@ Repositório: [github.com/Tidlle/projeto-Kairo](https://github.com/Tidlle/projet
 | Agenda (eventos, vínculo com tarefa) | ✅ |
 | Notificações locais (prazo de tarefa, início de evento) | ✅ (cálculo puro testado; comportamento real não roda no Expo Go, ver [Limitações](#limitações-conhecidas)) |
 | Sincronização SQLite local ↔ Supabase | ✅ |
-| App desktop (Tauri) com banco local funcional | ✅ (banco verificado; UI não confirmada visualmente ainda) |
+| App desktop (Tauri) com banco local funcional | ✅ — banco e UI confirmados visualmente, dados reais renderizando e reatividade testada (build instalado ainda não tem a identidade visual nova, ver [Limitações](#limitações-conhecidas)) |
 | Testes em dispositivo físico (iOS/Android) | ✅ Android e iPhone testados |
 | Identidade visual (ícone, tema escuro fixo, tipografia Fraunces/Inter) | ✅ — ver [Identidade visual](#identidade-visual) |
 | CI (lint, types, testes automatizados) | ✅ GitHub Actions, roda a cada push/PR para `main` |
@@ -154,7 +154,7 @@ O Expo Go não suporta mais `expo-notifications` completamente desde o SDK 53 �
 ## Limitações conhecidas
 
 - **SQLite não funciona num navegador comum** — `expo-sqlite` não tem suporte estável a Web. O preview em `npm run web` mostra uma mensagem explicativa em vez de dados reais; os dados de verdade só existem no app mobile (iOS/Android) e no app desktop (Tauri, que usa um banco SQLite próprio via Rust, não o `expo-sqlite`).
-- **UI do app desktop ainda não confirmada visualmente** — o banco local do Tauri foi validado inspecionando o arquivo `.db` gerado diretamente, mas não houve confirmação visual de que a interface renderiza os dados corretamente.
+- **Build instalado do app desktop está desatualizado em relação à identidade visual** — o `.exe`/instalador em `%LOCALAPPDATA%\Kairo` foi gerado antes do tema escuro/tipografia/ícone novos (ver [Identidade visual](#identidade-visual)); a UI renderiza os dados corretamente, mas ainda com o visual antigo (ícone padrão do Tauri, acento azul). Precisa de `npm run build -w @kairo/desktop` de novo pra pegar a marca atual.
 - **Notificações locais não testadas fisicamente** — o Expo Go não suporta `expo-notifications` completamente (SDK 53+); só o cálculo de horário (puro) e o wrapper são testados, não o disparo real da notificação num aparelho.
 - **`events` (agenda) sincroniza, mas sem recorrência** — campos como `recurrenceRule`/`origin`/`externalId` já existem no schema do Postgres (pensados para uma futura integração com Google Calendar) mas não são usados ainda.
 - **CI cobre só o que roda em Node puro** — type-check, lint e testes. Build do app desktop (precisa de Rust/toolchain nativo), publicação do mobile via EAS (precisa de credenciais) e testes em dispositivo físico ficam de fora, por ora.
