@@ -10,7 +10,7 @@ Gestão diária: finanças pessoais + rotina (tarefas, hábitos, metas, agenda) 
 
 Repositório: [github.com/Tidlle/projeto-Kairo](https://github.com/Tidlle/projeto-Kairo).
 
-**145 testes passando** (`npm test` na raiz), type-check limpo em todo o monorepo.
+**166 testes passando** (`npm test` na raiz), type-check limpo em todo o monorepo.
 
 | Área | Estado |
 |---|---|
@@ -19,12 +19,12 @@ Repositório: [github.com/Tidlle/projeto-Kairo](https://github.com/Tidlle/projet
 | CRUD de tarefas, hábitos, metas | ✅ — confirmado em Android e iPhone físicos |
 | Agenda (eventos, vínculo com tarefa) | ✅ |
 | Notificações locais (prazo de tarefa, início de evento) | ✅ (cálculo puro testado; comportamento real não roda no Expo Go, ver [Limitações](#limitações-conhecidas)) |
-| Sincronização SQLite local ↔ Supabase | ✅ |
-| App desktop (Tauri) com banco local funcional | ✅ — banco e UI confirmados visualmente, dados reais renderizando e reatividade testada (build instalado ainda não tem a identidade visual nova, ver [Limitações](#limitações-conhecidas)) |
+| Sincronização SQLite local ↔ Supabase (rotina) | ✅ |
+| Dashboard financeiro (entradas/saídas, categorias, gasto médio, heatmap) | ✅ código pronto e testado — falta o deploy da Edge Function `sync-finance`, ver [Limitações](#limitações-conhecidas) |
+| App desktop (Tauri) com banco local funcional | ✅ — banco, UI e identidade visual (kappa/Âmbar) confirmados visualmente, reatividade testada |
 | Testes em dispositivo físico (iOS/Android) | ✅ Android e iPhone testados |
 | Identidade visual (ícone, tema escuro fixo, tipografia Fraunces/Inter) | ✅ — ver [Identidade visual](#identidade-visual) |
 | CI (lint, types, testes automatizados) | ✅ GitHub Actions, roda a cada push/PR para `main` |
-| Dashboard financeiro (entradas/saídas, categorias, heatmap) | ⏳ pendente |
 
 ## Arquitetura
 
@@ -121,7 +121,8 @@ Esses quatro comandos são exatamente os que o CI roda a cada push — ver [`.gi
 | Variável | Para quê |
 |---|---|
 | `EXPO_PUBLIC_SYNC_FUNCTION_URL` | URL completa da Edge Function `sync-routine` |
-| `EXPO_PUBLIC_MOBILE_SYNC_SECRET` | O mesmo valor de `MOBILE_SYNC_SECRET` acima |
+| `EXPO_PUBLIC_FINANCE_SYNC_FUNCTION_URL` | URL completa da Edge Function `sync-finance` (espelho de transações/categorias, só leitura) |
+| `EXPO_PUBLIC_MOBILE_SYNC_SECRET` | O mesmo valor de `MOBILE_SYNC_SECRET` acima — reaproveitado pelas duas funções |
 
 ### Secrets do Supabase (`npx supabase secrets set ...`)
 
@@ -130,7 +131,7 @@ Espelham as variáveis do `.env` da raiz que a Edge Function precisa em runtime:
 ## Infraestrutura (Supabase)
 
 - Projeto: `okyxlkivdndmwxttrzey` (região `us-west-2`).
-- **Edge Functions**: `sync` (cron diário, sincroniza Pluggy → Postgres) e `sync-routine` (chamada pelo app, sincroniza tarefas/hábitos/metas/agenda entre o SQLite local e o Postgres).
+- **Edge Functions**: `sync` (cron diário, sincroniza Pluggy → Postgres), `sync-routine` (chamada pelo app, sincroniza tarefas/hábitos/metas/agenda entre o SQLite local e o Postgres) e `sync-finance` (chamada pelo dashboard, espelha `transactions`/`categories` do Postgres pro SQLite local — só leitura, sem push; **ainda não implantada**, ver [Limitações](#limitações-conhecidas)).
 - **Cron**: `kairo-sync-diario`, `pg_cron` + `pg_net`, roda `sync` todo dia às 09:00 UTC (06h Brasília).
 - Deploy de uma função: `npx supabase functions deploy <nome> --use-api --no-verify-jwt --import-map supabase/functions/<nome>/import_map.json`.
 - Migrações do Postgres em [`packages/db/migrations/`](packages/db/migrations) — geradas com `npm run db:generate`, aplicadas com `npm run db:migrate`.
@@ -154,7 +155,7 @@ O Expo Go não suporta mais `expo-notifications` completamente desde o SDK 53 �
 ## Limitações conhecidas
 
 - **SQLite não funciona num navegador comum** — `expo-sqlite` não tem suporte estável a Web. O preview em `npm run web` mostra uma mensagem explicativa em vez de dados reais; os dados de verdade só existem no app mobile (iOS/Android) e no app desktop (Tauri, que usa um banco SQLite próprio via Rust, não o `expo-sqlite`).
-- **Build instalado do app desktop está desatualizado em relação à identidade visual** — o `.exe`/instalador em `%LOCALAPPDATA%\Kairo` foi gerado antes do tema escuro/tipografia/ícone novos (ver [Identidade visual](#identidade-visual)); a UI renderiza os dados corretamente, mas ainda com o visual antigo (ícone padrão do Tauri, acento azul). Precisa de `npm run build -w @kairo/desktop` de novo pra pegar a marca atual.
+- **Edge Function `sync-finance` ainda não implantada** — o código (Postgres e Edge Function) está pronto e testado contra PGlite, mas o deploy (`npx supabase functions deploy sync-finance ...`) não rodou ainda porque o CLI não está autenticado neste ambiente. Sem isso, o botão "Atualizar" do dashboard financeiro falha com erro de conexão — o resto do app funciona normal.
 - **Notificações locais não testadas fisicamente** — o Expo Go não suporta `expo-notifications` completamente (SDK 53+); só o cálculo de horário (puro) e o wrapper são testados, não o disparo real da notificação num aparelho.
 - **`events` (agenda) sincroniza, mas sem recorrência** — campos como `recurrenceRule`/`origin`/`externalId` já existem no schema do Postgres (pensados para uma futura integração com Google Calendar) mas não são usados ainda.
 - **CI cobre só o que roda em Node puro** — type-check, lint e testes. Build do app desktop (precisa de Rust/toolchain nativo), publicação do mobile via EAS (precisa de credenciais) e testes em dispositivo físico ficam de fora, por ora.
