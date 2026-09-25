@@ -1,7 +1,7 @@
 import { eventsForDay, formatBRL, goalProgressPct, monthsToGoal, needsAttention, streakLabel, type Priority } from '@kairo/core';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ProgressBar } from '@/components/kairo/progress-bar';
@@ -232,7 +232,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     alignItems: 'center',
     paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.four,
+    // Na web, a barra de abas flutuante (app-tabs.web.tsx) é `position: absolute`
+    // por cima do conteúdo — sem esse respiro extra ela cobre a saudação.
+    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.four }),
     paddingBottom: Spacing.six,
   },
   column: {
