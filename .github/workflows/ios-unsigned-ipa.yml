@@ -1,0 +1,60 @@
+name: iOS (.ipa sem assinatura, para sideload)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Gerar .ipa não assinado
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Instalar dependências (raiz do monorepo)
+        working-directory: .
+        run: npm ci
+
+      - name: Gerar o projeto nativo iOS
+        run: npx expo prebuild --platform ios --no-install --clean
+
+      - name: Instalar Pods
+        working-directory: apps/mobile/ios
+        run: pod install --repo-update
+
+      - name: Compilar sem assinatura
+        working-directory: apps/mobile/ios
+        run: |
+          WORKSPACE=$(ls *.xcworkspace)
+          SCHEME=$(xcodebuild -list -json -workspace "$WORKSPACE" | jq -r '.workspace.schemes[0]')
+          echo "Workspace: $WORKSPACE / Scheme: $SCHEME"
+          xcodebuild archive \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath build/App.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Empacotar o .ipa
+        working-directory: apps/mobile/ios
+        run: |
+          mkdir -p Payload
+          cp -r build/App.xcarchive/Products/Applications/*.app Payload/
+          zip -qr Kairo-unsigned.ipa Payload
+
+      - name: Publicar o .ipa como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: kairo-ios-unsigned
+          path: apps/mobile/ios/Kairo-unsigned.ipa
+          retention-days: 14
