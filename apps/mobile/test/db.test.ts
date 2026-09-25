@@ -86,13 +86,14 @@ beforeEach(() => {
 });
 
 describe('migração', () => {
-  it('cria as 8 tabelas esperadas', () => {
+  it('cria as 10 tabelas esperadas', () => {
     const rows = sqlite
       .prepare("select name from sqlite_master where type='table' and name not like 'sqlite_%'")
       .all() as { name: string }[];
     const names = rows.map((r) => r.name).sort();
     assert.deepEqual(names, [
       'accounts',
+      'categories',
       'due_items',
       'events',
       'goals',
@@ -100,6 +101,7 @@ describe('migração', () => {
       'habits',
       'sync_state',
       'tasks',
+      'transactions',
     ]);
   });
 });

@@ -126,7 +126,7 @@ export default function HojeScreen() {
               </SectionCard>
             )}
 
-            <SectionCard title="Saldo">
+            <SectionCard title="Saldo" actionLabel="ver dashboard" onPressAction={() => router.push('/dashboard')}>
               <ThemedText type="money">{formatBRL(brief.balanceCents)}</ThemedText>
             </SectionCard>
 

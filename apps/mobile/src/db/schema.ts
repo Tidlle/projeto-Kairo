@@ -13,7 +13,7 @@
  * Postgres — aqui é só o suficiente para mostrar saldo.
  */
 
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 /**
  * UUID v4 em JS puro, sem depender do global `crypto` — achado num dispositivo
@@ -153,4 +153,43 @@ export const syncState = sqliteTable('sync_state', {
   tableName: text('table_name').primaryKey(),
   lastPushedAt: text('last_pushed_at'),
   lastPulledAt: text('last_pulled_at'),
+});
+
+/**
+ * Espelho SÓ-LEITURA de `packages/db/schema.ts` (Postgres) — alimenta o
+ * dashboard financeiro. Diferente de toda outra tabela deste arquivo:
+ * `id`/`updatedAt` vêm do servidor tal qual (sem `$defaultFn`), porque estas
+ * duas tabelas nunca são criadas nem editadas pelo app — só a sincronização
+ * `finance-sync.ts` escreve aqui, via `sync-finance` (pull-only, sem push).
+ * Sem `createdAt`: nunca há uso para "quando o dispositivo viu isto
+ * primeiro" num espelho. Reduzido às colunas que o dashboard usa — ver
+ * `packages/core/src/finance-sync-protocol.ts` para o motivo de cada uma.
+ */
+export const transactions = sqliteTable(
+  'transactions',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id'),
+    amountCents: integer('amount_cents').notNull(),
+    /** YYYY-MM-DD */
+    date: text('date').notNull(),
+    /** 'POSTED' | 'PENDING' */
+    status: text('status').notNull(),
+    categoryId: text('category_id'),
+    isInternalTransfer: integer('is_internal_transfer', { mode: 'boolean' }).notNull().default(false),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [index('transactions_date_idx').on(t.date), index('transactions_category_idx').on(t.categoryId)],
+);
+
+export const categories = sqliteTable('categories', {
+  id: text('id').primaryKey(),
+  parentId: text('parent_id'),
+  name: text('name').notNull(),
+  icon: text('icon'),
+  color: text('color'),
+  isIncome: integer('is_income', { mode: 'boolean' }).notNull().default(false),
+  isTransfer: integer('is_transfer', { mode: 'boolean' }).notNull().default(false),
+  sortOrder: integer('sort_order').notNull().default(0),
+  updatedAt: text('updated_at').notNull(),
 });

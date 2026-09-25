@@ -1,11 +1,28 @@
-import { pickMainGoal, topPriorityTasks, type CalendarEvent, type DailyBrief, type Goal, type Habit, type Task } from '@kairo/core';
+import {
+  averageMonthlySpend,
+  categoryBreakdown,
+  currentMonthRange,
+  dailyBalanceSeries,
+  defaultDashboardMonthRange,
+  monthlyIncomeExpense,
+  pickMainGoal,
+  topPriorityTasks,
+  type CalendarEvent,
+  type CategoryTotal,
+  type DailyBalance,
+  type DailyBrief,
+  type Goal,
+  type Habit,
+  type MonthlyTotal,
+  type Task,
+} from '@kairo/core';
 import { eq } from 'drizzle-orm';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 
 import type { Db } from './client';
 import { toDomainEvent, toDomainGoal, toDomainHabit, toDomainTask } from './mappers';
 import { todayIso } from './queries';
-import { accounts, dueItems, events, goals, habitLogs, habits, tasks } from './schema';
+import { accounts, categories, dueItems, events, goals, habitLogs, habits, tasks, transactions } from './schema';
 
 /**
  * Hooks de leitura reativa (`useLiveQuery`, que precisa do runtime do Expo) —
@@ -75,4 +92,35 @@ export function useAllGoals(db: Db): Goal[] {
 export function useAllEvents(db: Db): CalendarEvent[] {
   const rows = useLiveQuery(db.select().from(events)).data ?? [];
   return rows.map(toDomainEvent);
+}
+
+export type FinanceDashboardData = {
+  monthly: MonthlyTotal[];
+  categories: CategoryTotal[];
+  averageMonthlyCents: number;
+  daily: DailyBalance[];
+  hasAnyTransaction: boolean;
+};
+
+/**
+ * Dados do dashboard financeiro — lê o espelho local (`transactions`/
+ * `categories`, alimentado por `finance-sync.ts`) e delega toda a conta pras
+ * funções puras de `packages/core/src/finance-dashboard.ts`. Janela fixa:
+ * últimos 12 meses pras barras/média, mês atual pra categoria/heatmap.
+ */
+export function useFinanceDashboard(db: Db): FinanceDashboardData {
+  const today = new Date();
+  const monthRange = defaultDashboardMonthRange(today);
+  const dateRange = currentMonthRange(today);
+
+  const transactionRows = useLiveQuery(db.select().from(transactions)).data ?? [];
+  const categoryRows = useLiveQuery(db.select().from(categories)).data ?? [];
+
+  return {
+    monthly: monthlyIncomeExpense(transactionRows, monthRange),
+    categories: categoryBreakdown(transactionRows, categoryRows, dateRange),
+    averageMonthlyCents: averageMonthlySpend(transactionRows, monthRange),
+    daily: dailyBalanceSeries(transactionRows, dateRange),
+    hasAnyTransaction: transactionRows.length > 0,
+  };
 }

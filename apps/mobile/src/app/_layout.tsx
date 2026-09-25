@@ -43,6 +43,7 @@ export default function RootLayout() {
           <Stack.Screen name="habits" options={{ presentation: 'modal' }} />
           <Stack.Screen name="goals" options={{ presentation: 'modal' }} />
           <Stack.Screen name="agenda" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="dashboard" options={{ presentation: 'modal' }} />
         </Stack>
       </RootShell>
     </ThemeProvider>

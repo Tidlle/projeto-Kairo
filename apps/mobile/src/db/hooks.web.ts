@@ -1,4 +1,21 @@
-import { pickMainGoal, topPriorityTasks, type CalendarEvent, type DailyBrief, type Goal, type Habit, type Task } from '@kairo/core';
+import {
+  averageMonthlySpend,
+  categoryBreakdown,
+  currentMonthRange,
+  dailyBalanceSeries,
+  defaultDashboardMonthRange,
+  monthlyIncomeExpense,
+  pickMainGoal,
+  topPriorityTasks,
+  type CalendarEvent,
+  type CategoryTotal,
+  type DailyBalance,
+  type DailyBrief,
+  type Goal,
+  type Habit,
+  type MonthlyTotal,
+  type Task,
+} from '@kairo/core';
 import { eq } from 'drizzle-orm';
 import { useEffect, useState } from 'react';
 
@@ -6,7 +23,7 @@ import { onDbChange } from './change-bus';
 import type { Db } from './client.web';
 import { toDomainEvent, toDomainGoal, toDomainHabit, toDomainTask } from './mappers';
 import { todayIso } from './queries';
-import { accounts, dueItems, events, goals, habitLogs, habits, tasks } from './schema';
+import { accounts, categories, dueItems, events, goals, habitLogs, habits, tasks, transactions } from './schema';
 
 /**
  * Equivalente de `hooks.ts` (nativo) para o alvo Web/Tauri — sem `useLiveQuery`,
@@ -89,4 +106,30 @@ export function useAllGoals(db: Db): Goal[] {
 export function useAllEvents(db: Db): CalendarEvent[] {
   const rows = useLiveProxyQuery(() => db.select().from(events), [db]) ?? [];
   return rows.map(toDomainEvent);
+}
+
+export type FinanceDashboardData = {
+  monthly: MonthlyTotal[];
+  categories: CategoryTotal[];
+  averageMonthlyCents: number;
+  daily: DailyBalance[];
+  hasAnyTransaction: boolean;
+};
+
+/** Equivalente web/desktop de `useFinanceDashboard` (hooks.ts) — mesma janela, mesmas funções puras. */
+export function useFinanceDashboard(db: Db): FinanceDashboardData {
+  const today = new Date();
+  const monthRange = defaultDashboardMonthRange(today);
+  const dateRange = currentMonthRange(today);
+
+  const transactionRows = useLiveProxyQuery(() => db.select().from(transactions), [db]) ?? [];
+  const categoryRows = useLiveProxyQuery(() => db.select().from(categories), [db]) ?? [];
+
+  return {
+    monthly: monthlyIncomeExpense(transactionRows, monthRange),
+    categories: categoryBreakdown(transactionRows, categoryRows, dateRange),
+    averageMonthlyCents: averageMonthlySpend(transactionRows, monthRange),
+    daily: dailyBalanceSeries(transactionRows, dateRange),
+    hasAnyTransaction: transactionRows.length > 0,
+  };
 }

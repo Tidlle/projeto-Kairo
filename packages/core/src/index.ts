@@ -52,6 +52,7 @@ export {
   mapTransactions,
   mapAccount,
   summarize,
+  isRealSpend,
   type AccountRow,
 } from './pluggy/map.ts';
 
@@ -87,6 +88,28 @@ export {
   type SyncRequest,
   type SyncResponse,
 } from './sync-protocol.ts';
+
+export {
+  type SyncTransactionRow,
+  type SyncCategoryRow,
+  type FinancePullSince,
+  type FinancePullResult,
+  type FinancePullRequest,
+} from './finance-sync-protocol.ts';
+
+export {
+  monthlyIncomeExpense,
+  averageMonthlySpend,
+  categoryBreakdown,
+  dailyBalanceSeries,
+  defaultDashboardMonthRange,
+  currentMonthRange,
+  type MonthRange,
+  type DateRange,
+  type MonthlyTotal,
+  type CategoryTotal,
+  type DailyBalance,
+} from './finance-dashboard.ts';
 
 // O cliente HTTP (authenticate/createPluggyClient) fica de fora de propósito:
 // ele espera CLIENT_SECRET, que é server-only. O app nunca fala com a Pluggy

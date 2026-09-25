@@ -116,12 +116,23 @@ export function mapAccount(account: PluggyAccount): AccountRow {
 }
 
 /**
+ * Uma transação "conta" para entradas/saídas/dashboards: não é transferência
+ * interna (só mudou de bolso, não é receita nem despesa) e já foi confirmada
+ * (`PENDING` pode mudar de valor ou sumir). Único lugar com essa regra —
+ * `summarize()` aqui e as agregações do dashboard (`finance-dashboard.ts`)
+ * chamam esta função em vez de repetir a condição.
+ */
+export function isRealSpend(row: { isInternalTransfer: boolean; status: string }): boolean {
+  return !row.isInternalTransfer && row.status === 'POSTED';
+}
+
+/**
  * Totais do período, com transferência interna excluída dos dois lados.
  * É a diferença entre "gastei R$ 14.816" e "gastei R$ 14.816 menos o que só
  * mudei de bolso".
  */
 export function summarize(rows: TransactionRow[]) {
-  const real = rows.filter((r) => !r.isInternalTransfer && r.status === 'POSTED');
+  const real = rows.filter(isRealSpend);
 
   const income = real.filter((r) => r.amountCents > 0).reduce((s, r) => s + r.amountCents, 0);
   const expense = real.filter((r) => r.amountCents < 0).reduce((s, r) => s + r.amountCents, 0);
